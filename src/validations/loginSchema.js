@@ -1,2 +1,0 @@
-const yup = require('./yup');
-

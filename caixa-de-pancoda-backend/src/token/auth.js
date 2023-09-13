@@ -1,0 +1,1 @@
+module.exports = '7Y#dP$Q9rG5zT&*K';

@@ -1,42 +1,34 @@
 const bcrypt = require('bcrypt');
 const knex = require('../conection');
-const loginSchema = require('../validations/loginSchema');
 const jwt = require('jsonwebtoken');
-const auth = require('../token/auth');
+
+const hash = process.env.JWT_HASH;
 
 const login = async (req, res) => {
-    const { email, senha } = req.body
+    const { email, password } = req.body;
 
     try {
-        await loginSchema.validate(req.body)
-
-        const user = await knex("usuarios")
-            .where({ email }).first();
+        const user = await knex("usuarios").where({ email }).first();
 
         if (!user) {
-            return res.status(400).json('Email e/ou senha não confere!');
-        }
-        const decryptedPassword = await bcrypt.compare(senha, user.senha)
+            return res.status(400).json('O usuário não foi encontrado.');
+        };
+
+        const decryptedPassword = await bcrypt.compare(password, user.password);
 
         if (!decryptedPassword) {
-            return res.status(400).json('Email e/ou senha não confere!');
+            return res.status(400).json('O email e a senha não confere.');
         }
-        const token = await jwt.sign({ id: user.id }, auth, { expiresIn: "3h" })
+        const token = await jwt.sign({ id: user.id }, hash, { expiresIn: "8h" })
 
-        const { senha: _, ...userData } = user
-        userData.token = token
+        const { password: _, ...userData } = user;
 
-        res.status(200).json(userData)
+        return res.status(200).json({ user: userData, token });
 
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            const errorMessages = error.errors;
-            return res.status(400).json(errorMessages[0]);
-        }
-        console.error(error);
-        return res.status(500).json('Erro interno no servidor!');
+        return res.status(500).json({ mensagem: 'Erro interno do servidor' });
     }
 
 }
 
-module.exports = login
+module.exports = login;

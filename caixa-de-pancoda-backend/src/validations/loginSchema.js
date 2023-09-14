@@ -1,8 +1,8 @@
-const yup = require('./yup');
+const joi = require('joi');
 
-const loginSchema = yup.object().shape({
-    email: yup.string().email().required().trim(),
-    senha: yup.string().required().trim().min(6)
-})
+const loginSchema = joi.object()({
+    email: joi.string().required(),
+    password: joi.string().required(),
+});
 
-module.exports = loginSchema
+module.exports = loginSchema;

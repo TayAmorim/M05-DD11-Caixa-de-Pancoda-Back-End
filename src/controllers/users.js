@@ -23,13 +23,15 @@ const registerUser = async (req, res) => {
             }).returning('*');
 
         if (!user) {
-            return res.status(400).json("Usuário não cadastrado.")
+            return res.status(400).json({
+            mensagem: 'Usuário não cadastrado'
+        })
         }
 
-        const { password: _, ...registeredUser
-        } = user[0];
-
-        return res.status(201).json(registeredUser);
+        return res.status(201).json({
+            mensagem: 'Usuário cadastrado com sucesso'
+        });
+        
     } catch (error) {
         return res.status(500).json({
             mensagem: 'Erro interno do servidor'

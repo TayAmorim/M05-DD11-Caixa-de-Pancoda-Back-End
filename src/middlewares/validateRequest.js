@@ -9,4 +9,4 @@ const validateRequest = (schema) => async (req, res, next) => {
     }
 }
 
-module.exports = validateRequest;
+module.exports = validateRequest

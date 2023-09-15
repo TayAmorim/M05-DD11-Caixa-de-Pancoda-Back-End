@@ -17,7 +17,7 @@ const loginFilter = async (req, res, next) => {
 
         const { id } = jwt.verify(token, hash);
 
-        const foundedUser = await knex('usuarios').where({ id }).first();
+        const foundedUser = await knex('users').where({ id }).first();
 
         if (!foundedUser) {
             return res.status(404).json({

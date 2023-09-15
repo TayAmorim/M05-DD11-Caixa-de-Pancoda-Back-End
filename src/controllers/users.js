@@ -24,14 +24,14 @@ const registerUser = async (req, res) => {
 
         if (!user) {
             return res.status(400).json({
-            mensagem: 'Usuário não cadastrado'
-        })
+                mensagem: 'Usuário não cadastrado'
+            })
         }
 
         return res.status(201).json({
             mensagem: 'Usuário cadastrado com sucesso'
         });
-        
+
     } catch (error) {
         return res.status(500).json({
             mensagem: 'Erro interno do servidor'
@@ -40,6 +40,55 @@ const registerUser = async (req, res) => {
 
 }
 
+const updateUser = async (req, res) => {
+    const { name, email, password, cpf, phone } = req.body;
+    const { id } = req.user;
+
+
+    try {
+        const userFounded = await knex('users').where({ id }).first();
+
+        if (!userFounded) {
+            return res.status(404).json({
+                mensagem: 'Usuario não encontrado'
+            });
+        }
+
+        const encryptedPass = await bcrypt.hash(password, 10);
+
+        if (email !== req.user.email) {
+            const emailUserFounded = await knex('users').where({ email }).first();
+
+            if (emailUserFounded) {
+                return res.status(400).json({
+                    mensagem: 'O Email já está cadastrado.'
+                });
+
+            }
+        }
+
+        await knex('users').where({ id }).update({
+            name,
+            email,
+            password: encryptedPass,
+            cpf,
+            phone
+        });
+
+
+        return res.status(204).send();
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            mensagem: 'Erro interno do servidor'
+        });
+    }
+}
+
+
 module.exports = {
-    registerUser
+    registerUser,
+    updateUser
 }

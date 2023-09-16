@@ -1,9 +1,9 @@
 const joi = require("joi");
 
 const clientSchema = joi.object({
-  name: joi.string().required().messages({}),
-  email: joi.string().email().required().messages({}),
-  cpf: joi.string().required().max(11).messages({}),
+  name_client: joi.string().required().messages({}),
+  email_client: joi.string().email().required().messages({}),
+  cpf_client: joi.string().required().max(11).messages({}),
   phone_client: joi.string().required().max(16).messages({}),
   cep: joi.string().required().max(8).messages({}),
   address: joi.string().required().messages({}),

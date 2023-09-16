@@ -1,13 +1,18 @@
 const knex = require("../conection");
 const clientSchema = require("../validation/clientSchema");
 
-const requiredField = ["name", "email", "cpf", "phone_client"];
+const requiredField = [
+  "name_client",
+  "email_client",
+  "cpf_client",
+  "phone_client",
+];
 
 const newClient = async (req, res) => {
   const {
-    name,
-    email,
-    cpf,
+    name_client,
+    email_client,
+    cpf_client,
     phone_client,
     cep,
     address,
@@ -38,9 +43,9 @@ const newClient = async (req, res) => {
     const client = await knex("customers")
       .insert({
         id_user: id,
-        name,
-        email,
-        cpf,
+        name_client,
+        email_client,
+        cpf_client,
         phone_client,
         cep,
         address,

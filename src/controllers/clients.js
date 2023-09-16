@@ -26,7 +26,7 @@ const newClient = async (req, res) => {
   try {
     await clientSchema.validate(req.body);
 
-    const existEmail = await knex("customers").where({ email });
+    const existEmail = await knex("customers").where({ email_client });
 
     if (existEmail.length > 0) {
       return res

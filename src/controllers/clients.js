@@ -5,7 +5,7 @@ const requiredField = ['nome', 'email', 'cpf', 'phone'];
 
 const newClient = async (req, res) => {
     const { nome, email, cpf, phone, cep, address, complement, neighborhood, city, state } = req.body;
-    const { id } = req.user;
+
 
     try {
         await clientSchema.validate(req.body);

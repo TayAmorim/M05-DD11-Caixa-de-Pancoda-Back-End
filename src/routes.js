@@ -14,9 +14,11 @@ const routes = express();
 
 routes.post("/users", validateRequest(userSchema), registerUser);
 routes.post("/login", validateRequest(loginSchema), login);
-routes.post("/clients", validateRequest(clientSchema), newClient);
 
 routes.use(loginFilter);
+
+routes.post("/clients", validateRequest(clientSchema), newClient);
+
 
 routes.put("/updateuser", validateRequest(userSchema), updateUser);
 

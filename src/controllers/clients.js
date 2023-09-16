@@ -3,7 +3,7 @@ const clientSchema = require('../validation/clientSchema');
 
 
 const newClient = async (req, res) => {
-    const { nome, email, cpf, phone } = req.body;
+    const { nome, email, cpf, phone, cep, address, complement, neighborhood, city, state } = req.body;
     const { id } = req.user;
 
     try {
@@ -21,10 +21,16 @@ const newClient = async (req, res) => {
             email,
             cpf,
             phone,
+            cep,
+            address,
+            complement,
+            neighborhood,
+            city,
+            state
         }).returning('*');
 
         if (!client) {
-            return res.status(400).json({ mensagem: 'Cliente não cadastrado, campo obrigatório em branco!' });
+            return res.status(400).json({ mensagem: 'Cliente não cadastrado' });
         }
 
         return res.status(201).json({ mensagem: 'Cadastro realizado com sucesso!' });

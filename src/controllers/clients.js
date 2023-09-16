@@ -1,6 +1,7 @@
 const knex = require('../conection');
 const clientSchema = require('../validation/clientSchema');
 
+const requiredField = ['nome', 'email', 'cpf', 'phone'];
 
 const newClient = async (req, res) => {
     const { nome, email, cpf, phone, cep, address, complement, neighborhood, city, state } = req.body;
@@ -13,6 +14,10 @@ const newClient = async (req, res) => {
 
         if (existEmail.length > 0) {
             return res.status(400).json({ mensagem: 'Email já cadastrado no sistema.' });
+        }
+
+        if (requiredField.some(field => !req.body[field])) {
+            return res.status(400).json({ mensagem: 'Cliente não cadastrado, campo obrigatório' });
         }
 
         const client = await knex('clients').insert({
@@ -29,11 +34,10 @@ const newClient = async (req, res) => {
             state
         }).returning('*');
 
-        if (!client) {
-            return res.status(400).json({ mensagem: 'Cliente não cadastrado' });
+        if (client) {
+            return res.status(201).json({ mensagem: 'Cadastro realizado com sucesso!' });
         }
 
-        return res.status(201).json({ mensagem: 'Cadastro realizado com sucesso!' });
 
     } catch (error) {
         if (error.name === 'ValidationError') {

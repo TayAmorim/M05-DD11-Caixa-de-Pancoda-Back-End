@@ -1,7 +1,7 @@
 const joi = require("joi");
 
 const clientSchema = joi.object({
-    name: joi.string().required().messages({
+    nome: joi.string().required().messages({
         "any.required": "O campo nome é obrigatório",
         "string.empty": "O campo nome é obrigatório",
     }),

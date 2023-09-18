@@ -73,8 +73,9 @@ const updateUser = async (req, res) => {
     }
     if (password) {
       encryptedPass = await bcrypt.hash(password, 10);
+    } else {
+      encryptedPass = password;
     }
-    encryptedPass = password;
 
     if (email !== req.user.email) {
       const emailUserFounded = await knex("users").where({ email }).first();

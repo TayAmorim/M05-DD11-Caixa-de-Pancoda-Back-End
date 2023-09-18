@@ -10,9 +10,7 @@ const updateSchema = joi.object({
     "string.empty": "O campo email é obrigatório",
     "string.email": "Email inválido",
   }),
-  password: joi.string().messages({
-    "string.empty": "O campo senha é obrigatório",
-  }),
+  password: joi.string().messages({}),
   phone: joi.string().messages({}),
   cpf: joi.string().max(12).messages({}),
 });

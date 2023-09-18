@@ -1,6 +1,6 @@
 const joi = require("joi");
 
-const userSchema = joi.object({
+const updateSchema = joi.object({
   name: joi.string().required().messages({
     "any.required": "O campo nome é obrigatório",
     "string.empty": "O campo nome é obrigatório",
@@ -10,10 +10,11 @@ const userSchema = joi.object({
     "string.empty": "O campo email é obrigatório",
     "string.email": "Email inválido",
   }),
-  password: joi.string().required().messages({
-    "any.required": "O campo senha é obrigatório",
+  password: joi.string().messages({
     "string.empty": "O campo senha é obrigatório",
   }),
+  phone: joi.string().messages({}),
+  cpf: joi.string().max(12).messages({}),
 });
 
-module.exports = userSchema;
+module.exports = updateSchema;

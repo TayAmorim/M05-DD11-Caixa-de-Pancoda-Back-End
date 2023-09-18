@@ -61,6 +61,7 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { name, email, password, cpf, phone } = req.body;
   const { id } = req.user;
+  let encryptedPass;
 
   try {
     const userFounded = await knex("users").where({ id }).first();
@@ -70,8 +71,10 @@ const updateUser = async (req, res) => {
         mensagem: "Usuario não encontrado",
       });
     }
-
-    const encryptedPass = await bcrypt.hash(password, 10);
+    if (password) {
+      encryptedPass = await bcrypt.hash(password, 10);
+    }
+    encryptedPass = password;
 
     if (email !== req.user.email) {
       const emailUserFounded = await knex("users").where({ email }).first();

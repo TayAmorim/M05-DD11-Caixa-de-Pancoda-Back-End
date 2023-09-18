@@ -9,6 +9,7 @@ const loginSchema = require("./validation/loginSchema");
 
 const { newClient } = require("./controllers/clients");
 const clientSchema = require("./validation/clientSchema");
+const updateSchema = require("./validation/updateSchema");
 
 const routes = express();
 
@@ -20,6 +21,6 @@ routes.use(loginFilter);
 
 routes.post("/clients", validateRequest(clientSchema), newClient);
 
-routes.put("/updateuser", validateRequest(userSchema), updateUser);
+routes.put("/updateuser", validateRequest(updateSchema), updateUser);
 
 module.exports = routes;

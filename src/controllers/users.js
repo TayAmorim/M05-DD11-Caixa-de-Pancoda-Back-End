@@ -39,6 +39,25 @@ const registerUser = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userFounded = await knex("users").where({ id }).first();
+
+    if (!userFounded) {
+      return res.status(404).json({
+        mensagem: "Usuario não encontrado",
+      });
+    }
+    const { password: _, ...userData } = userFounded;
+    return res.json(userData);
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro interno do servidor",
+    });
+  }
+};
+
 const updateUser = async (req, res) => {
   const { name, email, password, cpf, phone } = req.body;
   const { id } = req.user;
@@ -84,4 +103,5 @@ const updateUser = async (req, res) => {
 module.exports = {
   registerUser,
   updateUser,
+  getUser,
 };

@@ -11,8 +11,8 @@ const updateSchema = joi.object({
     "string.email": "Email inválido",
   }),
   password: joi.string().messages({}),
-  phone: joi.string().messages({}),
-  cpf: joi.string().max(12).messages({}),
+  phone: joi.string().allow("").messages({}),
+  cpf: joi.string().allow("").max(12).messages({}),
 });
 
 module.exports = updateSchema;

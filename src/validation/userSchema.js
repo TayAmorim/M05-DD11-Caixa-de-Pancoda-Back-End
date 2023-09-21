@@ -10,7 +10,7 @@ const userSchema = joi.object({
     "string.empty": "O campo email é obrigatório",
     "string.email": "Email inválido",
   }),
-  password: joi.string().required().messages({
+  password: joi.string().min(8).required().messages({
     "any.required": "O campo senha é obrigatório",
     "string.empty": "O campo senha é obrigatório",
   }),

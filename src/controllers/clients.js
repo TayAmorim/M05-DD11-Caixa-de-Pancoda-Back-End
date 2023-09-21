@@ -5,7 +5,7 @@ const requiredField = [
   "name_client",
   "email_client",
   "cpf_client",
-  "phone_client",
+  "phone_client"
 ];
 
 const newClient = async (req, res) => {
@@ -83,8 +83,8 @@ const listingClientes = async (req, res) => {
       .limit(cutOff)
       .offset(offSet);
 
-
     return res.json(clients);
+
   } catch (error) {
     console.log(error.message)
     return res.status(500).json({ error: 'Erro interno do servidor' });

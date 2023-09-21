@@ -1,6 +1,6 @@
 const joi = require("joi");
 
-const updateSchema = joi.object({
+const updateUserSchema = joi.object({
   name: joi.string().required().messages({
     "any.required": "O campo nome é obrigatório",
     "string.empty": "O campo nome é obrigatório",
@@ -15,4 +15,4 @@ const updateSchema = joi.object({
   cpf: joi.string().allow("").max(12).messages({}),
 });
 
-module.exports = updateSchema;
+module.exports = updateUserSchema;

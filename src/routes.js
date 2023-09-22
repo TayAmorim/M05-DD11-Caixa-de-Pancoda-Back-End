@@ -7,7 +7,7 @@ const { login } = require("./controllers/login");
 const loginFilter = require("./middlewares/loginFilter");
 const loginSchema = require("./validation/loginSchema");
 
-const { newClient } = require("./controllers/clients");
+const { newClient, listingClientes } = require("./controllers/clients");
 const clientSchema = require("./validation/clientSchema");
 const updateSchema = require("./validation/updateSchema");
 

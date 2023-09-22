@@ -99,13 +99,13 @@ const updateClient = async (req, res) => {
       return res.status(400).json({ mensagem: 'Cliente não encontrado' });
     }
 
-    if (registeredEmail.length > 0 && email_client !== identification) {
+    if (registeredEmail.length > 0 && email_client !== findClient[0].email_client) {
       return res
         .status(400)
         .json({ mensagem: "Email já cadastrado no sistema." });
     }
 
-    if (registeredCpf.length > 0 && cpf_client !== identification) {
+    if (registeredCpf.length > 0 && cpf_client !== findClient[0].cpf_client) {
       return res
         .status(400)
         .json({ mensagem: "CPF já cadastrado no sistema." });

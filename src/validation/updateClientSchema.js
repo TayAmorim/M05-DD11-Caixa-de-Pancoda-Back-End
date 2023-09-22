@@ -14,7 +14,7 @@ const updateClientSchema = joi.object({
     "any.required": "O campo cpf é obrigatório",
     "string.empty": "O campo cpf é obrigatório",
   }),
-  phone_client: joi.string().required().min(16).messages({
+  phone_client: joi.string().required().min(10).messages({
     "any.required": "O campo telefone é obrigatório",
     "string.empty": "O campo telefone é obrigatório",
   }),

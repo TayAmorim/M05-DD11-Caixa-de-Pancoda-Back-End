@@ -9,11 +9,8 @@ const clientSchema = joi.object({
   address: joi.string().allow("").messages({}),
   complement: joi.string().allow("").messages({}),
   neighborhood: joi.string().allow("").messages({}),
-  // neighborhood: joi.string().allow("").required().messages({}),
   city: joi.string().allow("").messages({}),
-  // city: joi.string().required().allow("").messages({}),
-  state: joi.string().length(2).allow("").messages({}),
-  // state: joi.string().length(2).allow("").required().messages({}),
+  state: joi.string().length(2).allow("").messages({})
 });
 
 module.exports = clientSchema;

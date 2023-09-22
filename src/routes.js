@@ -20,7 +20,7 @@ routes.get("/user/:id", getUser);
 routes.use(loginFilter);
 
 routes.post("/clients", validateRequest(clientSchema), newClient);
-
+routes.get("/listclients", listingClientes);
 routes.put("/updateuser", validateRequest(updateSchema), updateUser);
 
 module.exports = routes;

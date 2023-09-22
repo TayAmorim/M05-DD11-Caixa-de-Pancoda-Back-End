@@ -70,7 +70,7 @@ const newClient = async (req, res) => {
   }
 };
 
-const listingClientes = async (req, res) => {
+const listingClients = async (req, res) => {
   const { page } = req.query;
   const cutOff = 10;
   const currentPage = page || 1;
@@ -86,10 +86,10 @@ const listingClientes = async (req, res) => {
     return res.json(clients);
 
   } catch (error) {
-    console.log(error.message)
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };
+
 
 module.exports = {
   newClient,

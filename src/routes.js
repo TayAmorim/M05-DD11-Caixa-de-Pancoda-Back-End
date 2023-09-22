@@ -25,6 +25,6 @@ routes.use(loginFilter);
 routes.post("/clients", validateRequest(clientSchema), newClient);
 
 routes.put("/updateuser", validateRequest(updateUserSchema), updateUser);
-routes.put("/updateclient", validateRequest(updateClientSchema), updateClient);
+routes.put("/clients/:identification", validateRequest(updateClientSchema), updateClient);
 
 module.exports = routes;

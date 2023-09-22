@@ -95,17 +95,17 @@ const updateClient = async (req, res) => {
     const registeredEmail = await knex("customers").where({ email_client });
     const registeredCpf = await knex("customers").where({ cpf_client });
 
-    if (!findClient) {
+    if (findClient.length === 0) {
       return res.status(400).json({ mensagem: 'Cliente não encontrado' });
     }
 
-    if (registeredEmail.length > 0 && registeredEmail[0].id !== identification) {
+    if (registeredEmail.length > 0 && email_client !== identification) {
       return res
         .status(400)
         .json({ mensagem: "Email já cadastrado no sistema." });
     }
 
-    if (registeredCpf.length > 0 && registeredCpf[0].id !== identification) {
+    if (registeredCpf.length > 0 && cpf_client !== identification) {
       return res
         .status(400)
         .json({ mensagem: "CPF já cadastrado no sistema." });
@@ -135,7 +135,7 @@ const updateClient = async (req, res) => {
       .returning('*');
 
     if (updateClient) {
-      return res.status(200).json({ mensagem: 'Cliente atualizado com sucesso!' });
+      return res.status(200).json({ mensagem: 'Os dados do cliente foram atualizados com sucesso!' });
     }
 
   } catch (error) {

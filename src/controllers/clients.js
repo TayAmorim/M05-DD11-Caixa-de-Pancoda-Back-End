@@ -5,7 +5,7 @@ const requiredField = [
   "name_client",
   "email_client",
   "cpf_client",
-  "phone_client",
+  "phone_client"
 ];
 
 const newClient = async (req, res) => {
@@ -71,50 +71,43 @@ const newClient = async (req, res) => {
 };
 
 const listingClients = async (req, res) => {
-  const { page } = req.query;
-  const cutOff = 10;
-  const currentPage = page || 1;
-
   try {
-    offSet = (currentPage - 1) * cutOff;
+    const { page } = req.query;
+    const cutOff = 10;
+    const currentPage = page || 1;
+    const offSet = (currentPage - 1) * cutOff;
+    const currentDate = new Date();
+    const totalClients = await knex('customers').count('* as total').first();
+    const totalPages = Math.ceil(totalClients.total / cutOff);
 
-    const clients = await knex('customers')
-      .select('name_client', 'email_client', 'cpf_client', 'phone_client')
+    const clients = await knex("customers")
+      .select("id", "name_client", "email_client", "cpf_client", "phone_client")
       .limit(cutOff)
       .offset(offSet);
 
-    return res.json(clients);
+    const clientPromises = clients.map(async (client) => {
+      const chargeCount = await knex("charges")
+        .count("id_charges")
+        .where("status", true)
+        .where("due_date", "<", currentDate)
+        .where("id_customer", client.id);
 
+      const hasCharges = chargeCount[0].count > 0;
+      return { ...client, status: hasCharges };
+    });
+
+    const clientsWithStatus = await Promise.all(clientPromises);
+
+    res.json({ clientsWithStatus, totalPages });
   } catch (error) {
-    return res.status(500).json({ mensagem: 'Erro interno do servidor' });
+    res.status(500).json({
+      mensagem: "Erro interno do servidor",
+      detalhes: error.message,
+    });
   }
-};
-
-const detailClient = async (req, res) => {
-
-  const { id } = req.params;
-
-  try {
-    const client = await knex('customers')
-      .select('name_client', 'email_client', 'cpf_client', 'phone_client', 'address', 'neighborhood', 'complement', 'cep', 'city', 'state')
-      .where({ id })
-      .first();
-
-    if (!client) {
-      return res.status(404).json({ mensagem: 'Cliente não encontrado' });
-    }
-
-    return res.json(client);
-  } catch (error) {
-    console.log(error.message)
-    return res.status(500).json({ mensagem: 'Erro interno do servidor' });
-  }
-
 };
 
 module.exports = {
   newClient,
-  listingClients,
-  detailClient
+  listingClients
 };
-

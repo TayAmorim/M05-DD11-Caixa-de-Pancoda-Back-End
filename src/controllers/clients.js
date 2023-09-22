@@ -86,13 +86,37 @@ const listingClients = async (req, res) => {
     return res.json(clients);
 
   } catch (error) {
-    return res.status(500).json({ error: 'Erro interno do servidor' });
+    return res.status(500).json({ mensagem: 'Erro interno do servidor' });
   }
 };
 
+const detailClient = async (req, res) => {
+
+  // nome, email, telefone, cpf, endereço, bairro, complemento, cep, cidade, uf
+
+  const { id } = req.params;
+
+  try {
+    const client = await knex('customers')
+      .select('name_client', 'email_client', 'cpf_client', 'phone_client', 'address', 'neighborhood', 'complement', 'cep', 'city', 'state')
+      .where({ id })
+      .first();
+
+    if (!client) {
+      return res.status(404).json({ mensagem: 'Cliente não encontrado' });
+    }
+
+    return res.json(client);
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({ mensagem: 'Erro interno do servidor' });
+  }
+
+};
 
 module.exports = {
   newClient,
-  listingClients
+  listingClients,
+  detailClient
 };
 

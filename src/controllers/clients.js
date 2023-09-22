@@ -92,8 +92,6 @@ const listingClients = async (req, res) => {
 
 const detailClient = async (req, res) => {
 
-  // nome, email, telefone, cpf, endereço, bairro, complemento, cep, cidade, uf
-
   const { id } = req.params;
 
   try {

@@ -93,6 +93,6 @@ const listingClients = async (req, res) => {
 
 module.exports = {
   newClient,
-  listingClientes
+  listingClients
 };
 

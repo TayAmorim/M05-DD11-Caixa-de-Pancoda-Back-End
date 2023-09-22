@@ -70,7 +70,7 @@ const newClient = async (req, res) => {
   }
 };
 
-const listingClientes = async (req, res) => {
+const listingClients = async (req, res) => {
   const { page } = req.query;
   const cutOff = 10;
   const currentPage = page || 1;
@@ -93,5 +93,5 @@ const listingClientes = async (req, res) => {
 
 module.exports = {
   newClient,
-  listingClientes
+  listingClients
 };

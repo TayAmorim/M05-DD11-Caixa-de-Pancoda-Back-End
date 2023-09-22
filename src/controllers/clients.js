@@ -77,6 +77,8 @@ const listingClients = async (req, res) => {
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
     const currentDate = new Date();
+    const totalClients = await knex('customers').count('* as total').first();
+    const totalPages = Math.ceil(totalClients.total / cutOff);
 
     const clients = await knex("customers")
       .select("id", "name_client", "email_client", "cpf_client", "phone_client")
@@ -96,7 +98,7 @@ const listingClients = async (req, res) => {
 
     const clientsWithStatus = await Promise.all(clientPromises);
 
-    res.json(clientsWithStatus);
+    res.json({ clientsWithStatus, totalPages });
   } catch (error) {
     res.status(500).json({
       mensagem: "Erro interno do servidor",

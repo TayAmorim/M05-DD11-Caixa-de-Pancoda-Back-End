@@ -87,7 +87,7 @@ const listingClients = async (req, res) => {
 
   } catch (error) {
 
-    return res.status(500).json({ error: 'Erro interno do servidor' });
+    return res.status(500).json({ mensagem: 'Erro interno do servidor' });
   }
 };
 

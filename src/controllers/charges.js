@@ -16,7 +16,7 @@ const newCharge = async (req, res) => {
     try {
         await addChargeSchema.validate(req.body);
 
-        const findClient = await knex("customers").where({ id_customer });
+        const findClient = await knex("customers").where("id", id_customer);
 
         if (findClient.length === 0) {
             return res.status(400).json({ mensagem: "Cliente não encontrado" });

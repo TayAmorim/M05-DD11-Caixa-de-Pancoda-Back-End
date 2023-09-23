@@ -15,7 +15,7 @@ const addChargeSchema = joi.object({
         'number.integer': 'O campo valor deve ser um número inteiro.',
         'number.min': 'O campo valor deve ser maior ou igual a 0.',
     }),
-    due_date: joi.date().iso().required().messages({
+    due_date: joi.string().required().messages({
         'any.required': 'O campo data de vencimento é obrigatório.',
         'date.base': 'O campo data de vencimento deve ser uma data válida no formato ISO.',
     }),

@@ -5,7 +5,7 @@ const requiredField = [
   "name_client",
   "email_client",
   "cpf_client",
-  "phone_client",
+  "phone_client"
 ];
 
 const newClient = async (req, res) => {
@@ -70,4 +70,44 @@ const newClient = async (req, res) => {
   }
 };
 
-module.exports = { newClient };
+const listingClients = async (req, res) => {
+  try {
+    const { page } = req.query;
+    const cutOff = 10;
+    const currentPage = page || 1;
+    const offSet = (currentPage - 1) * cutOff;
+    const currentDate = new Date();
+    const totalClients = await knex('customers').count('* as total').first();
+    const totalPages = Math.ceil(totalClients.total / cutOff);
+
+    const clients = await knex("customers")
+      .select("id", "name_client", "email_client", "cpf_client", "phone_client")
+      .limit(cutOff)
+      .offset(offSet);
+
+    const clientPromises = clients.map(async (client) => {
+      const chargeCount = await knex("charges")
+        .count("id_charges")
+        .where("status", true)
+        .where("due_date", "<", currentDate)
+        .where("id_customer", client.id);
+
+      const hasCharges = chargeCount[0].count > 0;
+      return { ...client, status: hasCharges };
+    });
+
+    const clientsWithStatus = await Promise.all(clientPromises);
+
+    res.json({ clientsWithStatus, totalPages });
+  } catch (error) {
+    res.status(500).json({
+      mensagem: "Erro interno do servidor",
+      detalhes: error.message,
+    });
+  }
+};
+
+module.exports = {
+  newClient,
+  listingClients
+};

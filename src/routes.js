@@ -18,6 +18,9 @@ const updateUserSchema = require("./validation/updateUserSchema");
 const { updateClient } = require("./controllers/clients");
 const updateClientSchema = require("./validation/updateClientSchema");
 
+const { newCharge } = require("./controllers/charges");
+const addChargeSchema = require("./validation/addChargeSchema");
+
 const routes = express();
 
 routes.post("/users", validateRequest(userSchema), registerUser);
@@ -36,5 +39,7 @@ routes.put(
 );
 routes.get("/listclients", listingClients);
 routes.get("/detailclient/:id", detailClient);
+
+routes.post("/charges", validateRequest(addChargeSchema), newCharge);
 
 module.exports = routes;

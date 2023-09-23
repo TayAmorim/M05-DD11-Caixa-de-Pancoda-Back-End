@@ -7,7 +7,11 @@ const { login } = require("./controllers/login");
 const loginFilter = require("./middlewares/loginFilter");
 const loginSchema = require("./validation/loginSchema");
 
-const { newClient, listingClients } = require("./controllers/clients");
+const {
+  newClient,
+  listingClients,
+  detailClient,
+} = require("./controllers/clients");
 const clientSchema = require("./validation/clientSchema");
 const updateSchema = require("./validation/updateSchema");
 
@@ -20,7 +24,8 @@ routes.get("/user/:id", getUser);
 routes.use(loginFilter);
 
 routes.post("/clients", validateRequest(clientSchema), newClient);
-routes.get("/listclients", listingClients);
 routes.put("/updateuser", validateRequest(updateSchema), updateUser);
+routes.get("/listclients", listingClients);
+routes.get("/detailclient/:id", detailClient);
 
 module.exports = routes;

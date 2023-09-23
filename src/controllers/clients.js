@@ -5,7 +5,7 @@ const requiredField = [
   "name_client",
   "email_client",
   "cpf_client",
-  "phone_client"
+  "phone_client",
 ];
 
 const newClient = async (req, res) => {
@@ -77,7 +77,7 @@ const listingClients = async (req, res) => {
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
     const currentDate = new Date();
-    const totalClients = await knex('customers').count('* as total').first();
+    const totalClients = await knex("customers").count("* as total").first();
     const totalPages = Math.ceil(totalClients.total / cutOff);
 
     const clients = await knex("customers")
@@ -107,7 +107,41 @@ const listingClients = async (req, res) => {
   }
 };
 
+const detailClient = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const client = await knex("customers")
+      .select(
+        "name_client",
+        "email_client",
+        "cpf_client",
+        "phone_client",
+        "address",
+        "neighborhood",
+        "complement",
+        "cep",
+        "city",
+        "state"
+      )
+      .where({ id })
+      .first();
+    const charges = await knex("charges")
+      .select("id_charges", "due_date", "amount", "status", "description")
+      .where({ id_customer: id });
+    if (!client) {
+      return res.status(404).json({ mensagem: "Cliente não encontrado" });
+    }
+
+    return res.json({ client, charges });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+};
+
 module.exports = {
   newClient,
-  listingClients
+  listingClients,
+  detailClient,
 };

@@ -126,12 +126,14 @@ const detailClient = async (req, res) => {
       )
       .where({ id })
       .first();
-
+    const charges = await knex("charges")
+      .select("id_charges", "due_date", "amount", "status", "description")
+      .where({ id_customer: id });
     if (!client) {
       return res.status(404).json({ mensagem: "Cliente não encontrado" });
     }
 
-    return res.json(client);
+    return res.json({ client, charges });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ mensagem: "Erro interno do servidor" });

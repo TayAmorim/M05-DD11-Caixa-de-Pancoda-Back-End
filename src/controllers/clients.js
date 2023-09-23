@@ -135,7 +135,7 @@ const updateClient = async (req, res) => {
       .returning('*');
 
     if (updateClient) {
-      return res.status(200).json({ mensagem: 'Os dados do cliente foram atualizados com sucesso!' });
+      return res.status(200).json(updateClient[0]);
     }
 
   } catch (error) {

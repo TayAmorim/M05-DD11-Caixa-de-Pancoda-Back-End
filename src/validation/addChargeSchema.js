@@ -1,6 +1,10 @@
 const joi = require("joi");
 
 const addChargeSchema = joi.object({
+    id_customer: joi.string().required().message({
+        'any.required': 'O campo id do cliente é obrigatório.',
+        'string.empty': 'O campo id do cliente não pode estar vazio.',
+    }),
     name_client: joi.string().required().messages({
         'any.required': 'O campo nome do cliente é obrigatório.',
         'string.empty': 'O campo nome do cliente não pode estar vazio.',

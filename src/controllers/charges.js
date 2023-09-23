@@ -11,7 +11,7 @@ const requiredField = [
 ];
 
 const newCharge = async (req, res) => {
-    const { name_client, amount, due_date, registration_date, description, status } = req.body;
+    const { id_customer, name_client, amount, due_date, description, status } = req.body;
 
     try {
         await addChargeSchema.validate(req.body);
@@ -27,11 +27,10 @@ const newCharge = async (req, res) => {
         }
 
         const charge = await knex("charges").insert({
-            id_customer: id,
+            id_customer,
             name_client,
             amount,
             due_date,
-            registration_date,
             description,
             status,
         }).returning('*');

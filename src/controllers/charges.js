@@ -22,7 +22,7 @@ const newCharge = async (req, res) => {
             return res.status(400).json({ mensagem: "Cliente não encontrado" });
         }
 
-        if (requiredField.some((field) => !req.body[field])) {
+        if (requiredField.some((field) => !req.body.hasOwnProperty(field))) {
             return res.status(400).json({ mensagem: "Cobrança não cadastrada, campo obrigatório" });
         }
 

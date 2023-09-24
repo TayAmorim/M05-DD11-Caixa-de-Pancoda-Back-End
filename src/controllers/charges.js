@@ -56,34 +56,21 @@ const listingCharges = async (req, res) => {
         const cutOff = 10;
         const currentPage = page || 1;
         const offSet = (currentPage - 1) * cutOff;
-        const currentDate = new Date();
 
-        const chargesQuery = knex("charges")
-            .select("id", "id_customer", "name_client", "description", "due_date", "amount")
-            .limit(cutOff)
-            .offset(offSet);
 
-        const [charges, [totalCharges]] = await Promise.all([
-            chargesQuery,
-            knex("charges").count("* as total").first(),
+        const [charges, totalCharges] = await Promise.all([
+            knex("charges")
+                .select("*")
+                .limit(cutOff)
+                .offset(offSet),
+            knex("charges")
+                .count("* as total")
+                .first(),
         ]);
 
         const totalPages = Math.ceil(totalCharges.total / cutOff);
 
-        const chargePromises = charges.map(async (charge) => {
-            const chargeCount = await knex("charges")
-                .count("id_charges")
-                .where("status", true)
-                .where("due_date", "<", currentDate)
-                .where("id_customer", charge.id_customer);
-
-            const hasCharges = chargeCount[0].count > 0;
-            return { ...charge, status: hasCharges };
-        });
-
-        const chargesWithStatus = await Promise.all(chargePromises);
-
-        res.json({ chargesWithStatus, totalPages });
+        res.json({ charges, totalPages });
     } catch (error) {
         res.status(500).json({
             mensagem: "Erro interno do servidor",

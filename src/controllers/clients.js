@@ -207,10 +207,10 @@ const detailClient = async (req, res) => {
         "customers.city",
         "customers.state",
         "charges.id_charges",
+        "charges.description",
         "charges.due_date",
         "charges.amount",
-        "charges.status",
-        "charges.description"
+        "charges.status"
       )
       .leftJoin("charges", "customers.id", "charges.id_customer")
       .where("customers.id", id);
@@ -219,28 +219,33 @@ const detailClient = async (req, res) => {
       return res.status(404).json({ mensagem: "Cliente não encontrado" });
     }
 
+    const clientData = data[0];
+
     const client = {
-      name_client: data[0].name_client,
-      email_client: data[0].email_client,
-      cpf_client: data[0].cpf_client,
-      phone_client: data[0].phone_client,
-      address: data[0].address,
-      neighborhood: data[0].neighborhood,
-      complement: data[0].complement,
-      cep: data[0].cep,
-      city: data[0].city,
-      state: data[0].state,
+      name_client: clientData.name_client,
+      cpf_client: clientData.cpf_client,
+      email_client: clientData.email_client,
+      phone_client: clientData.phone_client,
+      address_complete: {
+        address: clientData.address,
+        cep: clientData.cep,
+        complement: clientData.complement,
+        neighborhood: clientData.neighborhood,
+        city: clientData.city,
+        state: clientData.state,
+      },
+      charges: data
+        .filter((row) => row.id_charges !== null)
+        .map((row) => ({
+          id_charges: row.id_charges,
+          description: row.description,
+          due_date: row.due_date,
+          amount: row.amount,
+          status: row.status,
+        })),
     };
 
-    const charges = data.map((row) => ({
-      id_charges: row.id_charges,
-      due_date: row.due_date,
-      amount: row.amount,
-      status: row.status,
-      description: row.description,
-    }));
-
-    return res.json({ client, charges });
+    return res.json(client);
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ mensagem: "Erro interno do servidor" });

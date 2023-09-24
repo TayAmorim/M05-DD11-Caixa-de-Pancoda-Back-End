@@ -196,6 +196,7 @@ const detailClient = async (req, res) => {
   try {
     const data = await knex("customers")
       .select(
+        "customers.id",
         "customers.name_client",
         "customers.email_client",
         "customers.cpf_client",
@@ -222,6 +223,7 @@ const detailClient = async (req, res) => {
     const clientData = data[0];
 
     const client = {
+      id: clientData.id,
       name_client: clientData.name_client,
       cpf_client: clientData.cpf_client,
       email_client: clientData.email_client,

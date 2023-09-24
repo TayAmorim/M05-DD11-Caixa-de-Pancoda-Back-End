@@ -22,7 +22,7 @@ const updateClientSchema = joi.object({
   address: joi.string().allow("").messages({}),
   complement: joi.string().allow("").messages({}),
   neighborhood: joi.string().allow("").required().messages({}),
-  city: joi.string().required().allow("").messages({}),
+  city: joi.string().allow("").messages({}),
   state: joi.string().length(2).allow("").required().messages({}),
 });
 

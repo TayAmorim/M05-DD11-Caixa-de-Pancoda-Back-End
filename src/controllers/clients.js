@@ -115,11 +115,9 @@ const updateClient = async (req, res) => {
     }
 
     if (requiredField.some((field) => !req.body[field])) {
-      return res
-        .status(400)
-        .json({
-          mensagem: "Cliente não cadastrado, campo obrigatório em branco.",
-        });
+      return res.status(400).json({
+        mensagem: "Cliente não cadastrado, campo obrigatório em branco.",
+      });
     }
 
     const updateClient = await knex("customers")
@@ -158,27 +156,30 @@ const listingClients = async (req, res) => {
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
-    const currentDate = new Date();
+    const currentDate = new Date().toISOString();
     const totalClients = await knex("customers").count("* as total").first();
     const totalPages = Math.ceil(totalClients.total / cutOff);
 
-    const clients = await knex("customers")
-      .select("id", "name_client", "email_client", "cpf_client", "phone_client")
+    const clientsWithStatus = await knex("customers")
+      .select(
+        "customers.id",
+        "customers.name_client",
+        "customers.email_client",
+        "customers.cpf_client",
+        "customers.phone_client",
+        knex.raw(
+          "COUNT(CASE WHEN charges.id_charges IS NOT NULL THEN 1 ELSE NULL END) > 0 as status"
+        )
+      )
+      .leftJoin("charges", function () {
+        this.on("charges.id_customer", "=", "customers.id")
+          .andOn(knex.raw("charges.status = ?", [true]))
+          .andOn(knex.raw("charges.due_date < ?", [currentDate]));
+      })
+      .groupBy("customers.id")
+      .orderBy("customers.id", "desc")
       .limit(cutOff)
       .offset(offSet);
-
-    const clientPromises = clients.map(async (client) => {
-      const chargeCount = await knex("charges")
-        .count("id_charges")
-        .where("status", true)
-        .where("due_date", "<", currentDate)
-        .where("id_customer", client.id);
-
-      const hasCharges = chargeCount[0].count > 0;
-      return { ...client, status: hasCharges };
-    });
-
-    const clientsWithStatus = await Promise.all(clientPromises);
 
     res.json({ clientsWithStatus, totalPages });
   } catch (error) {
@@ -193,27 +194,51 @@ const detailClient = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const client = await knex("customers")
+    const data = await knex("customers")
       .select(
-        "name_client",
-        "email_client",
-        "cpf_client",
-        "phone_client",
-        "address",
-        "neighborhood",
-        "complement",
-        "cep",
-        "city",
-        "state"
+        "customers.name_client",
+        "customers.email_client",
+        "customers.cpf_client",
+        "customers.phone_client",
+        "customers.address",
+        "customers.neighborhood",
+        "customers.complement",
+        "customers.cep",
+        "customers.city",
+        "customers.state",
+        "charges.id_charges",
+        "charges.due_date",
+        "charges.amount",
+        "charges.status",
+        "charges.description"
       )
-      .where({ id })
-      .first();
-    const charges = await knex("charges")
-      .select("id_charges", "due_date", "amount", "status", "description")
-      .where({ id_customer: id });
-    if (!client) {
+      .leftJoin("charges", "customers.id", "charges.id_customer")
+      .where("customers.id", id);
+
+    if (data.length === 0) {
       return res.status(404).json({ mensagem: "Cliente não encontrado" });
     }
+
+    const client = {
+      name_client: data[0].name_client,
+      email_client: data[0].email_client,
+      cpf_client: data[0].cpf_client,
+      phone_client: data[0].phone_client,
+      address: data[0].address,
+      neighborhood: data[0].neighborhood,
+      complement: data[0].complement,
+      cep: data[0].cep,
+      city: data[0].city,
+      state: data[0].state,
+    };
+
+    const charges = data.map((row) => ({
+      id_charges: row.id_charges,
+      due_date: row.due_date,
+      amount: row.amount,
+      status: row.status,
+      description: row.description,
+    }));
 
     return res.json({ client, charges });
   } catch (error) {

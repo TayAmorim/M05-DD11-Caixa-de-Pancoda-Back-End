@@ -1,5 +1,5 @@
 const knex = require("../conection");
-const { nameClient } = require("../utils/filterClients");
+const { filterByName, filterClientsByCPF } = require("../utils/filterClients");
 const clientSchema = require("../validation/clientSchema");
 const updateClientSchema = require("../validation/updateClientSchema");
 
@@ -153,7 +153,7 @@ const updateClient = async (req, res) => {
 
 const listingClients = async (req, res) => {
   try {
-    const { page, name } = req.query;
+    const { page, name, cpf } = req.query;
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
@@ -162,8 +162,13 @@ const listingClients = async (req, res) => {
     const totalPages = Math.ceil(totalClients.total / cutOff);
 
     if (name !== undefined) {
-      const nameFilter = await nameClient(name)(req);
+      const nameFilter = await filterByName(name)(req);
       return res.json(nameFilter);
+    }
+
+    if (cpf !== undefined) {
+      const cpfFilter = await filterClientsByCPF(cpf)(req);
+      return res.json(cpfFilter);
     }
 
     const clientsWithStatus = await knex("customers")

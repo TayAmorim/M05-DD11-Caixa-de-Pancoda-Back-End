@@ -1,4 +1,5 @@
 const knex = require("../conection");
+const { nameClient } = require("../utils/filterClients");
 const clientSchema = require("../validation/clientSchema");
 const updateClientSchema = require("../validation/updateClientSchema");
 
@@ -152,13 +153,18 @@ const updateClient = async (req, res) => {
 
 const listingClients = async (req, res) => {
   try {
-    const { page } = req.query;
+    const { page, name } = req.query;
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
     const currentDate = new Date().toISOString();
     const totalClients = await knex("customers").count("* as total").first();
     const totalPages = Math.ceil(totalClients.total / cutOff);
+
+    if (name !== undefined) {
+      const nameFilter = await nameClient(name)(req);
+      return res.json(nameFilter);
+    }
 
     const clientsWithStatus = await knex("customers")
       .select(

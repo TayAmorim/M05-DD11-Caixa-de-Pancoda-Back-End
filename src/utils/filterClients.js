@@ -34,7 +34,7 @@ const filterByName = () => async (req) => {
   }
 };
 
-const filterClientsByCPF = () => async (req) => {
+const filterByCPF = () => async (req) => {
   const currentDate = new Date().toISOString();
   const { cpf } = req.query;
   let clientsCpf = [];
@@ -64,7 +64,34 @@ const filterClientsByCPF = () => async (req) => {
   }
 };
 
+const filterByEmail = () => async (req) => {
+  const currentDate = new Date().toISOString();
+  const { email } = req.query;
+  const clientsCpf = await knex("customers")
+    .select(
+      "customers.id",
+      "customers.name_client",
+      "customers.email_client",
+      "customers.cpf_client",
+      "customers.phone_client",
+      knex.raw(
+        "COUNT(CASE WHEN charges.id_charges IS NOT NULL THEN 1 ELSE NULL END) > 0 as status"
+      )
+    )
+    .leftJoin("charges", function () {
+      this.on("charges.id_customer", "=", "customers.id")
+        .andOn(knex.raw("charges.status = ?", [true]))
+        .andOn(knex.raw("charges.due_date < ?", [currentDate]));
+    })
+    .where(knex.raw("lower(customers.email_client) ilike ?", [`%${email}%`]))
+    .groupBy("customers.id")
+    .orderBy("customers.id", "desc");
+
+  return clientsCpf;
+};
+
 module.exports = {
   filterByName,
-  filterClientsByCPF,
+  filterByCPF,
+  filterByEmail,
 };

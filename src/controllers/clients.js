@@ -3,6 +3,7 @@ const {
   filterByName,
   filterByCPF,
   filterByEmail,
+  filterByStatus,
 } = require("../utils/filterClients");
 const clientSchema = require("../validation/clientSchema");
 const updateClientSchema = require("../validation/updateClientSchema");
@@ -157,7 +158,7 @@ const updateClient = async (req, res) => {
 
 const listingClients = async (req, res) => {
   try {
-    const { page, name, cpf, email } = req.query;
+    const { page, name, cpf, email, status } = req.query;
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
@@ -178,6 +179,11 @@ const listingClients = async (req, res) => {
     if (email !== undefined) {
       const emailFilter = await filterByEmail(email)(req);
       return res.json(emailFilter);
+    }
+
+    if (status !== undefined) {
+      const statusFilter = await filterByStatus(status)(req);
+      return res.json(statusFilter);
     }
 
     const clientsWithStatus = await knex("customers")

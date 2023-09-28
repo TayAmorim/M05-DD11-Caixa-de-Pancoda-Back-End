@@ -1,5 +1,10 @@
 const { exist } = require("joi");
 const knex = require("../conection");
+const {
+  filterByNameClient,
+  filterById,
+  filterByStatus,
+} = require("../utils/filterCharges");
 const addChargeSchema = require("../validation/addChargeSchema");
 const updateChargeSchema = require("../validation/updateChargeSchema");
 
@@ -61,10 +66,25 @@ const newCharge = async (req, res) => {
 
 const listingCharges = async (req, res) => {
   try {
-    const { page } = req.query;
+    const { page, name_client, id_charges, state } = req.query;
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
+
+    if (name_client !== undefined) {
+      const filterByName = await filterByNameClient(name_client)(req);
+      return res.json(filterByName);
+    }
+
+    if (id_charges !== undefined) {
+      const idCharge = await filterById(id_charges)(req);
+      return res.json(idCharge);
+    }
+
+    if (state !== undefined) {
+      const status = await filterByStatus(state)(req);
+      return res.json(status);
+    }
 
     const [charges, totalCharges] = await Promise.all([
       knex("charges").select("*").limit(cutOff).offset(offSet),
@@ -83,22 +103,15 @@ const listingCharges = async (req, res) => {
 };
 
 const updateCharge = async (req, res) => {
-  const {
-    id_charges,
-    description,
-    status,
-    amount,
-    due_date
-  } = req.body;
+  const { id_charges, description, status, amount, due_date } = req.body;
 
   try {
     await updateChargeSchema.validate(req.body);
 
-
     const existCharge = await knex("charges").where({ id_charges }).first();
 
     if (!existCharge) {
-      return res.status(404).json({ mensagem: "Cobrança não encontrada" })
+      return res.status(404).json({ mensagem: "Cobrança não encontrada" });
     }
 
     const updateCharge = await knex("charges")
@@ -107,23 +120,53 @@ const updateCharge = async (req, res) => {
         description,
         status,
         amount,
-        due_date
+        due_date,
       })
       .returning("*");
 
     if (updateCharge) {
       return res.status(200).json(updateCharge[0]);
     }
-
   } catch (error) {
-
     return res.status(500).json({ mensagem: "Erro interno do servidor" });
   }
-}
+};
 
+const deleteCharge = async (req, res) => {
+  const { identification } = req.params;
+
+  try {
+    const findCharge = await knex("charges")
+      .where("id_charges", identification)
+      .returning("*");
+
+    if (findCharge.length === 0) {
+      return res.status(400).json("Cobrança não encontrada");
+    }
+
+    const deletedCharge = await knex("charges")
+      .where("id_charges", identification)
+      .delete()
+      .returning("*");
+
+    if (!deletedCharge || deleteCharge.length === 0) {
+      return res.status(400).json("Cobrança não excluida");
+    }
+
+    return res.status(200).json("Cobrança excluída com sucesso");
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      const errorMessages = error.errors;
+      console.log(errorMessages[0]);
+      return res.status(400).json(errorMessages[0]);
+    }
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+};
 
 module.exports = {
   newCharge,
   listingCharges,
-  updateCharge
+  updateCharge,
+  deleteCharge,
 };

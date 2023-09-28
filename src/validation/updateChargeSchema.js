@@ -1,6 +1,8 @@
 const joi = require("joi");
 
 const updateChargeSchema = joi.object({
+    id_charges: joi.number().allow().messages({}),
+    name_client: joi.string().allow().messages({}),
     amount: joi.number().integer().min(0).required().messages({
         "any.required": "O campo valor é obrigatório.",
         "number.base": "O campo valor deve ser um número.",

@@ -92,20 +92,20 @@ const updateCharge = async (req, res) => {
     status
   } = req.body;
 
-  const { chargeId } = req.params;
+  const { id_charges } = req.params;
 
   try {
     await updateChargeSchema.validate(req.body);
 
 
-    const existCharge = await knex("charges").where({ id: chargeId }).first();
+    const existCharge = await knex("charges").where({ id_charges }).first();
 
     if (!existCharge) {
       return res.status(404).json({ mensagem: "Cobrança não encontrada" })
     }
 
     const updateCharge = await knex("charges")
-      .where({ id: chargeId })
+      .where({ id_charges })
       .update({
         id_customer,
         name_client,
@@ -121,6 +121,7 @@ const updateCharge = async (req, res) => {
     }
 
   } catch (error) {
+    console.log(error.message)
     return res.status(500).json({ mensagem: "Erro interno do servidor" });
   }
 }

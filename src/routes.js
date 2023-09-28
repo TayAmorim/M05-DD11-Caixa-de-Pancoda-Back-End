@@ -41,7 +41,7 @@ routes.put(
 routes.get("/listclients", listingClients);
 routes.get("/detailclient/:id", detailClient);
 routes.get("/listcharges", listingCharges);
-routes.put("/updatecharge/:chargeId", validateRequest(updateChargeSchema));
+routes.put("/updatecharge", validateRequest(updateChargeSchema), updateCharge);
 routes.post("/charges", validateRequest(addChargeSchema), newCharge);
 
 module.exports = routes;

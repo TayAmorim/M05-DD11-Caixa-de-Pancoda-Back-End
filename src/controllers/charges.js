@@ -100,7 +100,40 @@ const listingCharges = async (req, res) => {
   }
 };
 
+const deleteCharge = async (req, res) => {
+  const { identification } = req.params;
+
+  try {
+    const findCharge = await knex("charges")
+      .where("id_charges", identification)
+      .returning("*");
+
+    if (findCharge.length === 0) {
+      return res.status(400).json("Cobrança não encontrada");
+    }
+
+    const deletedCharge = await knex("charges")
+      .where("id_charges", identification)
+      .delete()
+      .returning("*");
+
+    if (!deletedCharge || deleteCharge.length === 0) {
+      return res.status(400).json("Cobrança não excluida");
+    }
+
+    return res.status(200).json("Cobrança excluída com sucesso");
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      const errorMessages = error.errors;
+      console.log(errorMessages[0]);
+      return res.status(400).json(errorMessages[0]);
+    }
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+};
+
 module.exports = {
   newCharge,
   listingCharges,
+  deleteCharge,
 };

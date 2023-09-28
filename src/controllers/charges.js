@@ -1,4 +1,9 @@
 const knex = require("../conection");
+const {
+  filterByNameClient,
+  filterById,
+  filterByStatus,
+} = require("../utils/filterCharges");
 const addChargeSchema = require("../validation/addChargeSchema");
 
 const requiredField = [
@@ -59,10 +64,25 @@ const newCharge = async (req, res) => {
 
 const listingCharges = async (req, res) => {
   try {
-    const { page } = req.query;
+    const { page, name_client, id_charges, state } = req.query;
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
+
+    if (name_client !== undefined) {
+      const filterByName = await filterByNameClient(name_client)(req);
+      return res.json(filterByName);
+    }
+
+    if (id_charges !== undefined) {
+      const idCharge = await filterById(id_charges)(req);
+      return res.json(idCharge);
+    }
+
+    if (state !== undefined) {
+      const status = await filterByStatus(state)(req);
+      return res.json(status);
+    }
 
     const [charges, totalCharges] = await Promise.all([
       knex("charges").select("*").limit(cutOff).offset(offSet),

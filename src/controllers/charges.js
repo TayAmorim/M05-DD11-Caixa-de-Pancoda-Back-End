@@ -84,14 +84,14 @@ const deleteCharge = async (req, res) => {
     const { identification } = req.params;
 
     try {
-        const findCharge = await knex("charges").where({ id: identification }).returning('*');
+        const findCharge = await knex("charges").where("id_charges", identification).returning('*');
 
         if (findCharge.length === 0) {
             return res.status(400).json('Cobrança não encontrada')
         }
 
         const deletedCharge = await knex("charges")
-            .where({ id: identification })
+            .where("id_charges", identification)
             .delete()
             .returning('*');
 

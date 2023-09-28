@@ -85,14 +85,11 @@ const listingCharges = async (req, res) => {
 const updateCharge = async (req, res) => {
   const {
     id_charges,
-    name_client,
-    amount,
-    due_date,
     description,
-    status
+    status,
+    amount,
+    due_date
   } = req.body;
-
-
 
   try {
     await updateChargeSchema.validate(req.body);
@@ -107,11 +104,10 @@ const updateCharge = async (req, res) => {
     const updateCharge = await knex("charges")
       .where({ id_charges })
       .update({
-        name_client,
-        amount,
-        due_date,
         description,
-        status
+        status,
+        amount,
+        due_date
       })
       .returning("*");
 

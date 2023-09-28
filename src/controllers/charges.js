@@ -164,6 +164,17 @@ const deleteCharge = async (req, res) => {
   }
 };
 
+const detailCharge = async (req, res) => {
+  const { id_charges } = req.params;
+
+  try {
+
+
+  } catch (error) {
+
+  }
+}
+
 module.exports = {
   newCharge,
   listingCharges,

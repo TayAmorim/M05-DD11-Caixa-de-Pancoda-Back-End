@@ -18,8 +18,13 @@ const updateUserSchema = require("./validation/updateUserSchema");
 const { updateClient } = require("./controllers/clients");
 const updateClientSchema = require("./validation/updateClientSchema");
 
-const { newCharge, listingCharges, deleteCharge } = require("./controllers/charges");
+const {
+  newCharge,
+  listingCharges,
+  deleteCharge,
+} = require("./controllers/charges");
 const addChargeSchema = require("./validation/addChargeSchema");
+const customReport = require("./controllers/custom");
 
 const routes = express();
 
@@ -40,10 +45,10 @@ routes.put(
 routes.get("/listclients", listingClients);
 routes.get("/detailclient/:id", detailClient);
 routes.get("/listcharges", listingCharges);
+routes.get("/customReport", customReport);
 
 routes.post("/charges", validateRequest(addChargeSchema), newCharge);
 
 routes.delete("/charges/:identification", deleteCharge);
-
 
 module.exports = routes;

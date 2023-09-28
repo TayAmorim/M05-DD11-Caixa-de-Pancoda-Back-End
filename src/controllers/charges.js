@@ -84,7 +84,7 @@ const listingCharges = async (req, res) => {
 
 const updateCharge = async (req, res) => {
   const {
-    id_customer,
+    id_charges,
     name_client,
     amount,
     due_date,
@@ -92,7 +92,7 @@ const updateCharge = async (req, res) => {
     status
   } = req.body;
 
-  const { id_charges } = req.params;
+
 
   try {
     await updateChargeSchema.validate(req.body);
@@ -107,14 +107,13 @@ const updateCharge = async (req, res) => {
     const updateCharge = await knex("charges")
       .where({ id_charges })
       .update({
-        id_customer,
         name_client,
         amount,
         due_date,
         description,
         status
       })
-      .returning("id_charges, name_client, description, status, amout, due_date, registration_date");
+      .returning(["id_charges", "name_client", "description", "status", "amount", "due_date", "registration_date"]);
 
     if (updateCharge) {
       return res.status(200).json(updateCharge[0]);

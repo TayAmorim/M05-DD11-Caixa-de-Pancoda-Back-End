@@ -113,7 +113,7 @@ const updateCharge = async (req, res) => {
         description,
         status
       })
-      .returning(["id_charges", "name_client", "description", "status", "amount", "due_date", "registration_date"]);
+      .returning("*");
 
     if (updateCharge) {
       return res.status(200).json(updateCharge[0]);

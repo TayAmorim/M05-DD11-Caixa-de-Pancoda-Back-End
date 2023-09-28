@@ -24,7 +24,26 @@ const filterById = () => async (req) => {
   return chargesId;
 };
 
+const filterByStatus = () => async (req) => {
+  const currentDate = new Date().toISOString();
+  const { state } = req.query;
+
+  if (state === "paid") {
+    chargesStatus = await knex("charges").where({ status: false });
+  } else if (state === "preview") {
+    chargesStatus = await knex("charges")
+      .where({ status: true })
+      .andWhere("due_date", ">=", currentDate);
+  } else if (state === "overdue") {
+    chargesStatus = await knex("charges")
+      .where({ status: true })
+      .andWhere("due_date", "<", currentDate);
+  }
+  return chargesStatus;
+};
+
 module.exports = {
   filterByNameClient,
   filterById,
+  filterByStatus,
 };

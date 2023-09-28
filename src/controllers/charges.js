@@ -1,3 +1,4 @@
+const { exist } = require("joi");
 const knex = require("../conection");
 const {
   filterByNameClient,
@@ -5,6 +6,7 @@ const {
   filterByStatus,
 } = require("../utils/filterCharges");
 const addChargeSchema = require("../validation/addChargeSchema");
+const updateChargeSchema = require("../validation/updateChargeSchema");
 
 const requiredField = [
   "id_customer",
@@ -100,6 +102,36 @@ const listingCharges = async (req, res) => {
   }
 };
 
+const updateCharge = async (req, res) => {
+  const { id_charges, description, status, amount, due_date } = req.body;
+
+  try {
+    await updateChargeSchema.validate(req.body);
+
+    const existCharge = await knex("charges").where({ id_charges }).first();
+
+    if (!existCharge) {
+      return res.status(404).json({ mensagem: "Cobrança não encontrada" });
+    }
+
+    const updateCharge = await knex("charges")
+      .where({ id_charges })
+      .update({
+        description,
+        status,
+        amount,
+        due_date,
+      })
+      .returning("*");
+
+    if (updateCharge) {
+      return res.status(200).json(updateCharge[0]);
+    }
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+};
+
 const deleteCharge = async (req, res) => {
   const { identification } = req.params;
 
@@ -135,5 +167,6 @@ const deleteCharge = async (req, res) => {
 module.exports = {
   newCharge,
   listingCharges,
+  updateCharge,
   deleteCharge,
 };

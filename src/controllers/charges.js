@@ -89,21 +89,17 @@ const deleteCharge = async (req, res) => {
         if (findCharge.length === 0) {
             return res.status(400).json('Cobrança não encontrada')
         }
-        await knex.transaction(async (trx) => {
-            const deletedCharge = await knex("charges")
-                .where({ id: identification })
-                .delete()
-                .returning('*')
-                .transaction(trx);
 
-            if (!deletedCharge || deleteCharge.length === 0) {
-                trx.rollback();
-                return res.status(400).json('Cobrança não excluida');
-            };
+        const deletedCharge = await knex("charges")
+            .where({ id: identification })
+            .delete()
+            .returning('*');
 
-            trx.commit();
-            return res.status(200).json('Cobrança excluída com sucesso');
-        });
+        if (!deletedCharge || deleteCharge.length === 0) {
+            return res.status(400).json('Cobrança não excluida');
+        };
+
+        return res.status(200).json('Cobrança excluída com sucesso');
     } catch (error) {
         if (error.name === "ValidationError") {
             const errorMessages = error.errors;

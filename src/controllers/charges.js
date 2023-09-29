@@ -165,13 +165,31 @@ const deleteCharge = async (req, res) => {
 };
 
 const detailCharge = async (req, res) => {
-  const { id_charges } = req.params;
+  const { id } = req.params;
 
   try {
+    const dataCharge = await knex("charges")
+      .select(
+        "name_client",
+        "description",
+        "due_date",
+        "amount",
+        "id_charges",
+        "status"
+      )
+      .where("id_charges", id)
 
+    if (dataCharge.length === 0) {
+      return res.status(404).json({
+        mensagem: "Cobrança não encontrada"
+      })
+    }
+
+    return res.json(dataCharge);
 
   } catch (error) {
-
+    console.log(error.message)
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
   }
 }
 
@@ -180,4 +198,5 @@ module.exports = {
   listingCharges,
   updateCharge,
   deleteCharge,
+  detailCharge
 };

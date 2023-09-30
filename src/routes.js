@@ -23,6 +23,7 @@ const {
   listingCharges,
   updateCharge,
   deleteCharge,
+  detailCharge,
 } = require("./controllers/charges");
 const addChargeSchema = require("./validation/addChargeSchema");
 const customReport = require("./controllers/custom");
@@ -48,7 +49,7 @@ routes.get("/detailclient/:id", detailClient);
 routes.get("/listcharges", listingCharges);
 routes.put("/updatecharge", validateRequest(updateChargeSchema), updateCharge);
 routes.get("/customReport", customReport);
-
+routes.get("/detailcharge/:id", detailCharge)
 routes.post("/charges", validateRequest(addChargeSchema), newCharge);
 
 routes.delete("/charges/:identification", deleteCharge);

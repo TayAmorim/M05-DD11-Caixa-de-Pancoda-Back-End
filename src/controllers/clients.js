@@ -181,8 +181,8 @@ const listingClients = async (req, res) => {
       return res.json(emailFilter);
     }
 
-    if (status !== undefined) {
-      const statusFilter = await filterByStatus(status)(req);
+    if (status !== undefined && page !== undefined) {
+      const statusFilter = await filterByStatus(status, page)(req);
       return res.json(statusFilter);
     }
 

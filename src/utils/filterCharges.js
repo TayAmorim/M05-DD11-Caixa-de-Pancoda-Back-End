@@ -26,20 +26,27 @@ const filterById = () => async (req) => {
 
 const filterByStatus = () => async (req) => {
   const currentDate = new Date().toISOString();
-  const { state } = req.query;
+
+  const { state, page } = req.query;
+  const cutOff = 10;
+  const currentPage = page || 1;
+  const offset = (currentPage - 1) * cutOff;
 
   if (state === "paid") {
-    chargesStatus = await knex("charges").where({ status: false });
+    charges = await knex("charges").where({ status: false });
   } else if (state === "preview") {
-    chargesStatus = await knex("charges")
+    charges = await knex("charges")
       .where({ status: true })
       .andWhere("due_date", ">=", currentDate);
   } else if (state === "overdue") {
-    chargesStatus = await knex("charges")
+    charges = await knex("charges")
       .where({ status: true })
       .andWhere("due_date", "<", currentDate);
   }
-  return chargesStatus;
+  charges = charges.slice(offset, offset + cutOff);
+  const totalCount = charges.length;
+  const totalPages = Math.ceil(totalCount / cutOff);
+  return { charges, totalPages };
 };
 
 module.exports = {

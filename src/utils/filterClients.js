@@ -87,8 +87,11 @@ const filterByEmail = () => async (req) => {
 };
 
 const filterByStatus = (campo) => async (req) => {
-  const { status } = req.query;
+  const { status, page } = req.query;
   const currentDate = new Date().toISOString();
+  const cutOff = 10;
+  const currentPage = page || 1;
+  const offSet = (currentPage - 1) * cutOff;
   let clientsFilter = [];
   const clientsStatus = await knex("customers")
     .select(
@@ -117,7 +120,9 @@ const filterByStatus = (campo) => async (req) => {
       return client.status === false;
     }
   });
-  return clientsFilter;
+  const totalPages = Math.ceil(clientsFilter.length / cutOff);
+  const clientsWithStatus = clientsFilter.slice(offSet, offSet + cutOff);
+  return { clientsWithStatus, totalPages };
 };
 
 module.exports = {

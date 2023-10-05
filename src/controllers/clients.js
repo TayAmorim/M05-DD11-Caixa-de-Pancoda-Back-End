@@ -1,4 +1,10 @@
 const knex = require("../conection");
+const {
+  filterByName,
+  filterByCPF,
+  filterByEmail,
+  filterByStatus,
+} = require("../utils/filterClients");
 const clientSchema = require("../validation/clientSchema");
 const updateClientSchema = require("../validation/updateClientSchema");
 
@@ -152,13 +158,33 @@ const updateClient = async (req, res) => {
 
 const listingClients = async (req, res) => {
   try {
-    const { page } = req.query;
+    const { page, name, cpf, email, status } = req.query;
     const cutOff = 10;
     const currentPage = page || 1;
     const offSet = (currentPage - 1) * cutOff;
     const currentDate = new Date().toISOString();
     const totalClients = await knex("customers").count("* as total").first();
     const totalPages = Math.ceil(totalClients.total / cutOff);
+
+    if (name !== undefined) {
+      const nameFilter = await filterByName(name)(req);
+      return res.json(nameFilter);
+    }
+
+    if (cpf !== undefined) {
+      const cpfFilter = await filterByCPF(cpf)(req);
+      return res.json(cpfFilter);
+    }
+
+    if (email !== undefined) {
+      const emailFilter = await filterByEmail(email)(req);
+      return res.json(emailFilter);
+    }
+
+    if (status !== undefined && page !== undefined) {
+      const statusFilter = await filterByStatus(status, page)(req);
+      return res.json(statusFilter);
+    }
 
     const clientsWithStatus = await knex("customers")
       .select(
@@ -249,7 +275,6 @@ const detailClient = async (req, res) => {
 
     return res.json(client);
   } catch (error) {
-    console.log(error.message);
     return res.status(500).json({ mensagem: "Erro interno do servidor" });
   }
 };
